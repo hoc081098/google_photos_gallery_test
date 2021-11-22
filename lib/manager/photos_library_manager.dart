@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:gallery_test/photos_library_api/album.dart';
+import 'package:gallery_test/photos_library_api/media_item.dart';
 import 'package:gallery_test/photos_library_api/photos_library_api_client.dart';
+import 'package:gallery_test/photos_library_api/search_media_items_request.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart_ext/rxdart_ext.dart';
@@ -46,6 +50,19 @@ class PhotosLibraryManager {
     return client == null
         ? Future.error(const UnauthenticatedException())
         : client.listAlbums().then((res) => res.albums ?? []);
+  }
+
+  Future<List<MediaItem>> getPhotosByAlbum(Album? album) async {
+    final client = client$.value;
+    if (client == null) {
+      throw const UnauthenticatedException();
+    }
+    if (album == null) {
+      throw UnimplementedError();
+    }
+    return client
+        .searchMediaItems(SearchMediaItemsRequest(album.id, 100, null))
+        .then((res) => res.mediaItems ?? []);
   }
 
   Future<void> logout() => _googleSignIn.signOut();

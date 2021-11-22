@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialPageRoute<void>(
             settings: settings,
             builder: (context) =>
-                ImagesListPage(album: settings.arguments as Album),
+                ImagesListPage(album: settings.arguments as Album?),
           );
         }
         return null;
