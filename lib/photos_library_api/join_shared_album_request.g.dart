@@ -7,11 +7,10 @@ part of 'join_shared_album_request.dart';
 // **************************************************************************
 
 JoinSharedAlbumRequest _$JoinSharedAlbumRequestFromJson(
-    Map<String, dynamic> json) {
-  return JoinSharedAlbumRequest(
-    json['shareToken'] as String,
-  );
-}
+        Map<String, dynamic> json) =>
+    JoinSharedAlbumRequest(
+      json['shareToken'] as String,
+    );
 
 Map<String, dynamic> _$JoinSharedAlbumRequestToJson(
         JoinSharedAlbumRequest instance) =>

@@ -25,8 +25,11 @@ class ImagesListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Single<List<MediaItem>> loaderFunction() => Single.fromCallable(() =>
-        Provider.of<PhotosLibraryManager>(context).getPhotosByAlbum(album));
+    final manager = context.get<PhotosLibraryManager>();
+
+    Single<List<MediaItem>> loaderFunction() =>
+        Single.timer(null, const Duration(milliseconds: 300)).flatMapSingle(
+            (_) => Single.fromCallable(() => manager.getPhotosByAlbum(album)));
 
     return Scaffold(
       appBar: AppBar(
@@ -101,7 +104,7 @@ class ImageItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = (MediaQuery.of(context).size.width - 8.0) / 2;
+    final width = ((MediaQuery.of(context).size.width - 8.0) / 2).floor();
     debugPrint('[DEBUG] width=$width');
 
     return GestureDetector(
@@ -118,7 +121,7 @@ class ImageItemWidget extends StatelessWidget {
                   children: <Widget>[
                     Positioned.fill(
                       child: Image.asset(
-                        'assets/picture.png',
+                        'assets/images/picture.png',
                         fit: BoxFit.cover,
                       ),
                     ),

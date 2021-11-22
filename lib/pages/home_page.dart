@@ -7,6 +7,7 @@ import 'package:flutter_provider/flutter_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gallery_test/pages/albums_list_page.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
+import 'package:gallery_test/pages/images_list_page.dart';
 import 'package:gallery_test/utils/delay.dart';
 import 'package:gallery_test/utils/snackbar.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
@@ -37,9 +38,11 @@ class _MyHomePageState extends State<MyHomePage> with DisposeBagMixin {
         children: [
           Image.asset(
             'assets/images/google_photos_logo.png',
-            height: 512,
-            width: 512,
+            height: 256,
+            width: 256,
+            scale: 0.5,
           ),
+          const SizedBox(height: 32),
           Center(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -72,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> with DisposeBagMixin {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Google',
+                        'Sign in with Google',
                         style: Theme.of(context)
                             .textTheme
                             .button!
@@ -113,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> with DisposeBagMixin {
           // ignore: use_build_context_synchronously
           Navigator.pushNamedAndRemoveUntil(
             context,
-            AlbumsListPage.routeName,
+            HomeDashboardPage.routeName,
             (_) => false,
           ),
         );
@@ -128,5 +131,94 @@ class _MyHomePageState extends State<MyHomePage> with DisposeBagMixin {
         isLoading$.add(false);
       }
     }
+  }
+}
+
+class HomeDashboardPage extends StatelessWidget {
+  static const routeName = '/home_dashboard';
+
+  const HomeDashboardPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: const [
+          LogoutButton(),
+        ],
+      ),
+      body: GridView.count(
+        crossAxisCount: 2,
+        childAspectRatio: 1,
+        children: [
+          buildItem(
+            context,
+            'Albums',
+            () => Navigator.pushNamed(context, AlbumsListPage.routeName),
+            Colors.red,
+          ),
+          buildItem(
+            context,
+            'Photos',
+            () => Navigator.pushNamed(context, ImagesListPage.routeName),
+            Colors.pink,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildItem(
+    BuildContext context,
+    String title,
+    void Function() onTap,
+    Color color,
+  ) {
+    return Card(
+      color: color,
+      child: InkWell(
+        onTap: onTap,
+        child: Center(
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.headline6,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LogoutButton extends StatefulWidget {
+  const LogoutButton({Key? key}) : super(key: key);
+
+  @override
+  _LogoutButtonState createState() => _LogoutButtonState();
+}
+
+class _LogoutButtonState extends State<LogoutButton> {
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.exit_to_app),
+      onPressed: () => onSignOut(),
+    );
+  }
+
+  void onSignOut() {
+    final navigator = Navigator.of(context);
+
+    void onError(Object e, StackTrace s) {
+      debugPrint('$e $s');
+      if (mounted) {
+        context.showSnackBar('Failed to logout: $e');
+      }
+    }
+
+    Provider.of<PhotosLibraryManager>(context)
+        .logout()
+        .then((_) => navigator.pushNamedAndRemoveUntil('/', (route) => false))
+        .onError<Object>(onError);
   }
 }

@@ -7,117 +7,63 @@ part of 'batch_create_media_items_request.dart';
 // **************************************************************************
 
 BatchCreateMediaItemsRequest _$BatchCreateMediaItemsRequestFromJson(
-    Map<String, dynamic> json) {
-  return BatchCreateMediaItemsRequest(
-    json['albumId'] as String?,
-    (json['newMediaItems'] as List<dynamic>)
-        .map((e) => NewMediaItem.fromJson(e as Map<String, dynamic>))
-        .toList(),
-    json['albumPosition'] == null
-        ? null
-        : AlbumPosition.fromJson(json['albumPosition'] as Map<String, dynamic>),
-  );
-}
+        Map<String, dynamic> json) =>
+    BatchCreateMediaItemsRequest(
+      json['albumId'] as String?,
+      (json['newMediaItems'] as List<dynamic>)
+          .map((e) => NewMediaItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      json['albumPosition'] == null
+          ? null
+          : AlbumPosition.fromJson(
+              json['albumPosition'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$BatchCreateMediaItemsRequestToJson(
-    BatchCreateMediaItemsRequest instance) {
-  final val = <String, dynamic>{};
+        BatchCreateMediaItemsRequest instance) =>
+    <String, dynamic>{
+      'albumId': instance.albumId,
+      'newMediaItems': instance.newMediaItems,
+      'albumPosition': instance.albumPosition,
+    };
 
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
+NewMediaItem _$NewMediaItemFromJson(Map<String, dynamic> json) => NewMediaItem(
+      json['description'] as String?,
+      json['simpleMediaItem'] == null
+          ? null
+          : SimpleMediaItem.fromJson(
+              json['simpleMediaItem'] as Map<String, dynamic>),
+    );
 
-  writeNotNull('albumId', instance.albumId);
-  val['newMediaItems'] = instance.newMediaItems;
-  writeNotNull('albumPosition', instance.albumPosition);
-  return val;
-}
+Map<String, dynamic> _$NewMediaItemToJson(NewMediaItem instance) =>
+    <String, dynamic>{
+      'description': instance.description,
+      'simpleMediaItem': instance.simpleMediaItem,
+    };
 
-NewMediaItem _$NewMediaItemFromJson(Map<String, dynamic> json) {
-  return NewMediaItem(
-    json['description'] as String?,
-    json['simpleMediaItem'] == null
-        ? null
-        : SimpleMediaItem.fromJson(
-            json['simpleMediaItem'] as Map<String, dynamic>),
-  );
-}
-
-Map<String, dynamic> _$NewMediaItemToJson(NewMediaItem instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('description', instance.description);
-  writeNotNull('simpleMediaItem', instance.simpleMediaItem);
-  return val;
-}
-
-SimpleMediaItem _$SimpleMediaItemFromJson(Map<String, dynamic> json) {
-  return SimpleMediaItem(
-    json['uploadToken'] as String,
-  );
-}
+SimpleMediaItem _$SimpleMediaItemFromJson(Map<String, dynamic> json) =>
+    SimpleMediaItem(
+      json['uploadToken'] as String,
+    );
 
 Map<String, dynamic> _$SimpleMediaItemToJson(SimpleMediaItem instance) =>
     <String, dynamic>{
       'uploadToken': instance.uploadToken,
     };
 
-AlbumPosition _$AlbumPositionFromJson(Map<String, dynamic> json) {
-  return AlbumPosition(
-    json['relativeMediaItemId'] as String?,
-    json['relativeEnrichmentItemId'] as String?,
-    _$enumDecode(_$PositionTypeEnumMap, json['position']),
-  );
-}
-
-Map<String, dynamic> _$AlbumPositionToJson(AlbumPosition instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('relativeMediaItemId', instance.relativeMediaItemId);
-  writeNotNull('relativeEnrichmentItemId', instance.relativeEnrichmentItemId);
-  val['position'] = _$PositionTypeEnumMap[instance.position];
-  return val;
-}
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
+AlbumPosition _$AlbumPositionFromJson(Map<String, dynamic> json) =>
+    AlbumPosition(
+      json['relativeMediaItemId'] as String?,
+      json['relativeEnrichmentItemId'] as String?,
+      $enumDecode(_$PositionTypeEnumMap, json['position']),
     );
-  }
 
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
+Map<String, dynamic> _$AlbumPositionToJson(AlbumPosition instance) =>
+    <String, dynamic>{
+      'relativeMediaItemId': instance.relativeMediaItemId,
+      'relativeEnrichmentItemId': instance.relativeEnrichmentItemId,
+      'position': _$PositionTypeEnumMap[instance.position],
+    };
 
 const _$PositionTypeEnumMap = {
   PositionType.POSITION_TYPE_UNSPECIFIED: 'POSITION_TYPE_UNSPECIFIED',

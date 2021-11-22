@@ -18,15 +18,15 @@ class AlbumsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Single<List<Album>> loaderFunction() => Single.fromCallable(
-        Provider.of<PhotosLibraryManager>(context).getAlbums);
+    final manager = context.get<PhotosLibraryManager>();
+
+    Single<List<Album>> loaderFunction() =>
+        Single.timer(null, const Duration(milliseconds: 300))
+            .flatMapSingle((_) => Single.fromCallable(manager.getAlbums));
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Albums'),
-        actions: const [
-          LogoutButton(),
-        ],
       ),
       body: LoaderWidget<List<Album>>(
         blocProvider: () => LoaderBloc(
@@ -140,38 +140,5 @@ class AlbumWidgetItem extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class LogoutButton extends StatefulWidget {
-  const LogoutButton({Key? key}) : super(key: key);
-
-  @override
-  _LogoutButtonState createState() => _LogoutButtonState();
-}
-
-class _LogoutButtonState extends State<LogoutButton> {
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.exit_to_app),
-      onPressed: () => onSignOut(),
-    );
-  }
-
-  void onSignOut() {
-    final navigator = Navigator.of(context);
-
-    void onError(Object e, StackTrace s) {
-      debugPrint('$e $s');
-      if (mounted) {
-        context.showSnackBar('Failed to logout: $e');
-      }
-    }
-
-    Provider.of<PhotosLibraryManager>(context)
-        .logout()
-        .then((_) => navigator.pushNamedAndRemoveUntil('/', (route) => false))
-        .onError<Object>(onError);
   }
 }

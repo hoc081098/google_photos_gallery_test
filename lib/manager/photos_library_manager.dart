@@ -61,7 +61,18 @@ class PhotosLibraryManager {
       throw UnimplementedError();
     }
     return client
-        .searchMediaItems(SearchMediaItemsRequest(album.id, 100, null))
+        .searchMediaItems(
+          SearchMediaItemsRequest(
+            album.id,
+            100,
+            null,
+            SearchMediaItemsRequestFilters(
+              SearchMediaItemsRequestMediaTypeFilter(
+                [SearchMediaItemsRequestMediaType.PHOTO],
+              ),
+            ),
+          ),
+        )
         .then((res) => res.mediaItems ?? []);
   }
 

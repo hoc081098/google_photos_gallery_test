@@ -59,6 +59,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData.dark(),
       home: const MyHomePage(),
       routes: {
+        HomeDashboardPage.routeName: (context) => const HomeDashboardPage(),
         AlbumsListPage.routeName: (context) => const AlbumsListPage(),
       },
       onGenerateRoute: (settings) {

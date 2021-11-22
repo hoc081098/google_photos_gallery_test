@@ -6,11 +6,10 @@ part of 'create_album_request.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-CreateAlbumRequest _$CreateAlbumRequestFromJson(Map<String, dynamic> json) {
-  return CreateAlbumRequest(
-    Album.fromJson(json['album'] as Map<String, dynamic>),
-  );
-}
+CreateAlbumRequest _$CreateAlbumRequestFromJson(Map<String, dynamic> json) =>
+    CreateAlbumRequest(
+      Album.fromJson(json['album'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$CreateAlbumRequestToJson(CreateAlbumRequest instance) =>
     <String, dynamic>{
