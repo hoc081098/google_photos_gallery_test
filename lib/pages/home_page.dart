@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gallery_test/pages/albums_list_page.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
@@ -36,8 +35,10 @@ class _MyHomePageState extends State<MyHomePage> with DisposeBagMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SvgPicture.asset(
-            'assets/images/lockup_photos_horizontal.svg',
+          Image.asset(
+            'assets/images/google_photos_logo.png',
+            height: 512,
+            width: 512,
           ),
           Center(
             child: ElevatedButton(
@@ -109,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> with DisposeBagMixin {
         await delay(800);
 
         unawaited(
+          // ignore: use_build_context_synchronously
           Navigator.pushNamedAndRemoveUntil(
             context,
             AlbumsListPage.routeName,

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
+import 'package:gallery_test/pages/images_list_page.dart';
 import 'package:gallery_test/photos_library_api/album.dart';
 import 'package:gallery_test/utils/snackbar.dart';
 import 'package:gallery_test/widgets/empty_widget.dart';
@@ -98,7 +99,11 @@ class AlbumWidgetItem extends StatelessWidget {
       borderRadius: const BorderRadius.all(Radius.circular(4.0)),
       elevation: 3.0,
       child: InkWell(
-        onTap: () {},
+        onTap: () => Navigator.pushNamed(
+          context,
+          ImagesListPage.routeName,
+          arguments: album,
+        ),
         child: Stack(
           children: <Widget>[
             CachedNetworkImage(

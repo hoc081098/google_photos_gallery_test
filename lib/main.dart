@@ -7,6 +7,8 @@ import 'package:flutter_provider/flutter_provider.dart';
 import 'package:gallery_test/pages/albums_list_page.dart';
 import 'package:gallery_test/pages/home_page.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
+import 'package:gallery_test/pages/images_list_page.dart';
+import 'package:gallery_test/photos_library_api/album.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 void main() async {
@@ -31,17 +33,43 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      precacheImage(
+        const AssetImage('assets/images/google_photos_logo.png'),
+        context,
+      ).ignore();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(),
+      theme: ThemeData.dark(),
       home: const MyHomePage(),
       routes: {
         AlbumsListPage.routeName: (context) => const AlbumsListPage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == ImagesListPage.routeName) {
+          return MaterialPageRoute<void>(
+            settings: settings,
+            builder: (context) =>
+                ImagesListPage(album: settings.arguments as Album),
+          );
+        }
+        return null;
       },
     );
   }
