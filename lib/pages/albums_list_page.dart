@@ -23,11 +23,8 @@ class AlbumsListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Albums'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () => onSignOut(context),
-          ),
+        actions: const [
+          LogoutButton(),
         ],
       ),
       body: LoaderWidget<List<Album>>(
@@ -88,18 +85,6 @@ class AlbumsListPage extends StatelessWidget {
           context.showSnackBar('Refresh error'),
     );
   }
-
-  void onSignOut(BuildContext context) {
-    Provider.of<PhotosLibraryManager>(context).logout().then((_) {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        '/',
-        (route) => false,
-      );
-    }).catchError((e, s) {
-      debugPrint('$e $s');
-      context.showSnackBar('Failed to logout: $e');
-    });
-  }
 }
 
 class AlbumWidgetItem extends StatelessWidget {
@@ -150,5 +135,38 @@ class AlbumWidgetItem extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class LogoutButton extends StatefulWidget {
+  const LogoutButton({Key? key}) : super(key: key);
+
+  @override
+  _LogoutButtonState createState() => _LogoutButtonState();
+}
+
+class _LogoutButtonState extends State<LogoutButton> {
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.exit_to_app),
+      onPressed: () => onSignOut(),
+    );
+  }
+
+  void onSignOut() {
+    final navigator = Navigator.of(context);
+
+    void onError(Object e, StackTrace s) {
+      debugPrint('$e $s');
+      if (mounted) {
+        context.showSnackBar('Failed to logout: $e');
+      }
+    }
+
+    Provider.of<PhotosLibraryManager>(context)
+        .logout()
+        .then((_) => navigator.pushNamedAndRemoveUntil('/', (route) => false))
+        .onError<Object>(onError);
   }
 }

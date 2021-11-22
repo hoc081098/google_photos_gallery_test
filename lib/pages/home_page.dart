@@ -6,7 +6,7 @@ import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gallery_test/albums_list_page.dart';
+import 'package:gallery_test/pages/albums_list_page.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
 import 'package:gallery_test/utils/delay.dart';
 import 'package:gallery_test/utils/snackbar.dart';

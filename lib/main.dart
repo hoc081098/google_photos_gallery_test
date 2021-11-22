@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:gallery_test/albums_list_page.dart';
-import 'package:gallery_test/home_page.dart';
+import 'package:gallery_test/pages/albums_list_page.dart';
+import 'package:gallery_test/pages/home_page.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
