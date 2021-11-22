@@ -4,6 +4,8 @@ import 'package:flutter_provider/flutter_provider.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
 import 'package:gallery_test/photos_library_api/album.dart';
 import 'package:gallery_test/utils/snackbar.dart';
+import 'package:gallery_test/widgets/error_widget.dart';
+import 'package:gallery_test/widgets/loading_widget.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:stream_loader/stream_loader.dart';
 
@@ -37,40 +39,27 @@ class AlbumsListPage extends StatelessWidget {
         messageHandler: handleMessage,
         builder: (context, state, bloc) {
           if (state.error != null) {
-            return Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'Error: ${state.error}',
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: bloc.fetch,
-                    child: const Text('Retry'),
-                  )
-                ],
-              ),
+            return MyErrorWidget(
+              errorText: 'Error: ${state.error}',
+              onPressed: bloc.fetch,
             );
           }
           if (state.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const LoadingWidget();
           }
-          final items = state.content!;
 
+          final items = state.content!;
           return RefreshIndicator(
             onRefresh: bloc.refresh,
-            child: ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                crossAxisCount: 2,
+              ),
               itemCount: items.length,
-              itemBuilder: (context, index) {
-                return AlbumWidgetItem(album: items[index]);
-              },
-              separatorBuilder: (context, index) => const Divider(),
+              itemBuilder: (context, index) =>
+                  AlbumWidgetItem(album: items[index]),
             ),
           );
         },
