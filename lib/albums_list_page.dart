@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
@@ -91,6 +92,57 @@ class AlbumsListPage extends StatelessWidget {
       onRefreshSuccess: (data) => context.showSnackBar('Refresh success'),
       onRefreshFailure: (error, stackTrace) =>
           context.showSnackBar('Refresh error'),
+    );
+  }
+}
+
+class AlbumWidgetItem extends StatelessWidget {
+  final Album album;
+
+  const AlbumWidgetItem({Key? key, required this.album}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+      elevation: 3.0,
+      child: InkWell(
+        onTap: () {},
+        child: Stack(
+          children: <Widget>[
+            CachedNetworkImage(
+              imageUrl: album.coverPhotoBaseUrl ?? '',
+              fit: BoxFit.cover,
+              height: 400,
+              placeholder: (context, url) => Container(
+                constraints: const BoxConstraints.expand(),
+                child: Image.asset(
+                  'assets/picture.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Align(
+              child: Container(
+                padding: const EdgeInsets.all(4.0),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                ),
+                child: Text(
+                  album.title ?? 'N/A',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.0,
+                  ),
+                ),
+                width: double.infinity,
+              ),
+              alignment: AlignmentDirectional.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
