@@ -75,7 +75,7 @@ class PhotosLibraryApiClient {
   Future<ListAlbumsResponse> listAlbums() async {
     final response = await _client.get(
         Uri.parse('https://photoslibrary.googleapis.com/v1/albums?'
-            'pageSize=50&excludeNonAppCreatedData=true'),
+            'pageSize=50&excludeNonAppCreatedData=false'),
         headers: await _authHeaders);
 
     logError(response);

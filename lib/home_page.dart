@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> with DisposeBagMixin {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SvgPicture.asset(
-            'assets/lockup_photos_horizontal.svg',
+            'assets/images/lockup_photos_horizontal.svg',
           ),
           Center(
             child: ElevatedButton(
@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> with DisposeBagMixin {
           Navigator.pushNamedAndRemoveUntil(
             context,
             AlbumsListPage.routeName,
-            ModalRoute.withName(Navigator.defaultRouteName),
+            (_) => false,
           ),
         );
       }

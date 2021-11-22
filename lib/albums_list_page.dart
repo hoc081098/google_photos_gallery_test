@@ -17,66 +17,64 @@ class AlbumsListPage extends StatelessWidget {
     Single<List<Album>> loaderFunction() => Single.fromCallable(
         Provider.of<PhotosLibraryManager>(context).getAlbums);
 
-    return LoaderWidget<List<Album>>(
-      blocProvider: () => LoaderBloc(
-        loaderFunction: loaderFunction,
-        refresherFunction: loaderFunction,
-        initialContent: [],
-        logger: debugPrint,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Albums'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.exit_to_app),
+            onPressed: () => onSignOut(context),
+          ),
+        ],
       ),
-      messageHandler: handleMessage,
-      builder: (context, state, bloc) {
-        if (state.error != null) {
-          return Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Error: ${state.error}',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: bloc.fetch,
-                  child: const Text('Retry'),
-                )
-              ],
+      body: LoaderWidget<List<Album>>(
+        blocProvider: () => LoaderBloc(
+          loaderFunction: loaderFunction,
+          refresherFunction: loaderFunction,
+          initialContent: [],
+          logger: debugPrint,
+        ),
+        messageHandler: handleMessage,
+        builder: (context, state, bloc) {
+          if (state.error != null) {
+            return Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Error: ${state.error}',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: bloc.fetch,
+                    child: const Text('Retry'),
+                  )
+                ],
+              ),
+            );
+          }
+          if (state.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final items = state.content!;
+
+          return RefreshIndicator(
+            onRefresh: bloc.refresh,
+            child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return AlbumWidgetItem(album: items[index]);
+              },
+              separatorBuilder: (context, index) => const Divider(),
             ),
           );
-        }
-        if (state.isLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        final items = state.content!;
-
-        return RefreshIndicator(
-          onRefresh: bloc.refresh,
-          child: ListView.separated(
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final comment = items[index];
-
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor:
-                      Colors.primaries[index % Colors.primaries.length],
-                  maxRadius: 32,
-                  minRadius: 32,
-                  child: Text(comment.title?[0] ?? ''),
-                ),
-                title: Text(comment.title ?? ''),
-                subtitle: Text(comment.mediaItemsCount ?? 'N/A'),
-                onTap: () {},
-              );
-            },
-            separatorBuilder: (context, index) => const Divider(),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 
@@ -93,6 +91,18 @@ class AlbumsListPage extends StatelessWidget {
       onRefreshFailure: (error, stackTrace) =>
           context.showSnackBar('Refresh error'),
     );
+  }
+
+  void onSignOut(BuildContext context) {
+    Provider.of<PhotosLibraryManager>(context).logout().then((_) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/',
+        (route) => false,
+      );
+    }).catchError((e, s) {
+      debugPrint('$e $s');
+      context.showSnackBar('Failed to logout: $e');
+    });
   }
 }
 
@@ -117,7 +127,7 @@ class AlbumWidgetItem extends StatelessWidget {
               placeholder: (context, url) => Container(
                 constraints: const BoxConstraints.expand(),
                 child: Image.asset(
-                  'assets/picture.png',
+                  'assets/images/picture.png',
                   fit: BoxFit.cover,
                 ),
               ),
