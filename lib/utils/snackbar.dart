@@ -5,17 +5,24 @@ extension ShowSnackBarBuildContextExtension on BuildContext {
     String message, [
     Duration duration = const Duration(seconds: 1),
   ]) {
-    final messengerState = ScaffoldMessenger.of(this);
-    messengerState.hideCurrentSnackBar();
-    messengerState.showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: duration,
-      ),
-    );
+    try {
+      final messengerState = ScaffoldMessenger.maybeOf(this);
+      if (messengerState == null) {
+        return;
+      }
+      messengerState.hideCurrentSnackBar();
+      messengerState.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: duration,
+        ),
+      );
+    } catch (_) {}
   }
 
   void hideCurrentSnackBar() {
-    ScaffoldMessenger.of(this).hideCurrentSnackBar();
+    try {
+      ScaffoldMessenger.maybeOf(this)?.hideCurrentSnackBar();
+    } catch (_) {}
   }
 }
