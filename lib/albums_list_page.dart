@@ -4,6 +4,7 @@ import 'package:flutter_provider/flutter_provider.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
 import 'package:gallery_test/photos_library_api/album.dart';
 import 'package:gallery_test/utils/snackbar.dart';
+import 'package:gallery_test/widgets/empty_widget.dart';
 import 'package:gallery_test/widgets/error_widget.dart';
 import 'package:gallery_test/widgets/loading_widget.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
@@ -49,6 +50,12 @@ class AlbumsListPage extends StatelessWidget {
           }
 
           final items = state.content!;
+          if (items.isEmpty) {
+            return const EmptyWidget(
+              message: 'Empty album',
+            );
+          }
+
           return RefreshIndicator(
             onRefresh: bloc.refresh,
             child: GridView.builder(

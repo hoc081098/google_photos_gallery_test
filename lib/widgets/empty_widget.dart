@@ -17,10 +17,10 @@ class EmptyWidget extends StatelessWidget {
           Material(
             color: Colors.grey[200],
             borderRadius: BorderRadius.circular(56),
-            child: Container(
+            child: const SizedBox(
               height: 112,
               width: 112,
-              child: const Center(
+              child: Center(
                 child: Icon(
                   Icons.inbox,
                   size: 32,
