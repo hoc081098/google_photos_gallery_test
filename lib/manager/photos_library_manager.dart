@@ -18,7 +18,7 @@ class UnauthenticatedException implements Exception {
 class PhotosLibraryManager {
   final GoogleSignIn _googleSignIn;
 
-  late final StateStream<PhotosLibraryApiClient?> client$;
+  late final StateStream<PhotosLibraryApiClient?> _client$;
 
   PhotosLibraryManager(this._googleSignIn) {
     Stream<PhotosLibraryApiClient?> createClient(GoogleSignInAccount? value) {
@@ -33,7 +33,7 @@ class PhotosLibraryManager {
           : Stream.value(null);
     }
 
-    client$ = _googleSignIn.onCurrentUserChanged
+    _client$ = _googleSignIn.onCurrentUserChanged
         .startWith(null)
         .distinct()
         .switchMap(createClient)
@@ -43,20 +43,21 @@ class PhotosLibraryManager {
 
   Future<GoogleSignInAccount?> signIn() => _googleSignIn.signIn();
 
-  /// Load albums into the model by retrieving the list of all albums owned
-  /// by the user.
-  Future<List<Album>> getAlbums() {
-    final client = client$.value;
-    return client == null
-        ? Future.error(const UnauthenticatedException())
-        : client.listAlbums().then((res) => res.albums ?? []);
-  }
-
-  Future<List<MediaItem>> getPhotosByAlbum(Album? album) async {
-    final client = client$.value;
+  PhotosLibraryApiClient get _client {
+    final client = _client$.value;
     if (client == null) {
       throw const UnauthenticatedException();
     }
+    return client;
+  }
+
+  /// Load albums into the model by retrieving the list of all albums owned
+  /// by the user.
+  Future<List<Album>> getAlbums() =>
+      _client.listAlbums().then((res) => res.albums ?? []);
+
+  Future<List<MediaItem>> getPhotosByAlbum(Album? album) async {
+    final client = _client;
     if (album == null) {
       return client
           .searchMediaItems(
