@@ -143,6 +143,23 @@ class ImageItemWidget extends StatelessWidget {
                         ],
                       ),
                     ),
+                    errorWidget: (_, __, ___) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.error,
+                              color: Theme.of(context).colorScheme.secondary),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Error',
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle2!
+                                .copyWith(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 tag: item.id,
