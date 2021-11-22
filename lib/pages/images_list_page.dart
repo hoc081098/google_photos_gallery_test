@@ -68,7 +68,7 @@ class ImagesListPage extends StatelessWidget {
               itemBuilder: (context, index) =>
                   ImageItemWidget(item: images[index]),
               staggeredTileBuilder: (index) =>
-                  StaggeredTile.count(2, index.isEven ? 2 : 1),
+                  StaggeredTile.count(2, index.isEven ? 3 : 2),
               mainAxisSpacing: 8.0,
               crossAxisSpacing: 8.0,
               padding: const EdgeInsets.all(8.0),
@@ -181,14 +181,14 @@ class ImageItemWidget extends StatelessWidget {
                 ),
                 alignment: AlignmentDirectional.center,
                 child: Text(
-                  item.description ?? 'N/A',
-                  maxLines: 1,
+                  item.filename ?? 'N/A',
+                  maxLines: 2,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context)
                       .textTheme
                       .subtitle1!
-                      .copyWith(fontSize: 14.0),
+                      .copyWith(fontSize: 12.0),
                 ),
               ),
             )

@@ -12,6 +12,7 @@ MediaItem _$MediaItemFromJson(Map<String, dynamic> json) => MediaItem(
       json['productUrl'] as String?,
       json['baseUrl'] as String?,
       json['mimeType'] as String?,
+      json['filename'] as String?,
     );
 
 Map<String, dynamic> _$MediaItemToJson(MediaItem instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$MediaItemToJson(MediaItem instance) => <String, dynamic>{
       'productUrl': instance.productUrl,
       'baseUrl': instance.baseUrl,
       'mimeType': instance.mimeType,
+      'filename': instance.filename,
     };
