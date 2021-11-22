@@ -46,12 +46,12 @@ class AlbumsListPage extends StatelessWidget {
             );
           }
           if (state.isLoading) {
-            return const LoadingWidget();
+            return const MyLoadingWidget();
           }
 
           final items = state.content!;
           if (items.isEmpty) {
-            return const EmptyWidget(
+            return const MyEmptyWidget(
               message: 'Empty album',
             );
           }
