@@ -65,6 +65,7 @@ class AlbumsListPage extends StatelessWidget {
               itemCount: items.length,
               itemBuilder: (context, index) =>
                   AlbumWidgetItem(album: items[index]),
+              padding: const EdgeInsets.all(8.0),
             ),
           );
         },
@@ -95,9 +96,12 @@ class AlbumWidgetItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = ((MediaQuery.of(context).size.width - 8.0) / 2).floor();
+    const radius = BorderRadius.all(Radius.circular(4.0));
+
     return Material(
-      borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-      elevation: 3.0,
+      borderRadius: radius,
+      elevation: 4.0,
       child: InkWell(
         onTap: () => Navigator.pushNamed(
           context,
@@ -106,15 +110,20 @@ class AlbumWidgetItem extends StatelessWidget {
         ),
         child: Stack(
           children: <Widget>[
-            CachedNetworkImage(
-              imageUrl: album.coverPhotoBaseUrl ?? '',
-              fit: BoxFit.cover,
-              height: 400,
-              placeholder: (context, url) => Container(
-                constraints: const BoxConstraints.expand(),
-                child: Image.asset(
-                  'assets/images/picture.png',
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: radius,
+                child: CachedNetworkImage(
+                  imageUrl: '${album.coverPhotoBaseUrl}=w$width-h$width',
                   fit: BoxFit.cover,
+                  height: 400,
+                  placeholder: (context, url) => Container(
+                    constraints: const BoxConstraints.expand(),
+                    child: Image.asset(
+                      'assets/images/picture.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
             ),

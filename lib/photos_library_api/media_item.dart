@@ -4,7 +4,8 @@ part 'media_item.g.dart';
 
 @JsonSerializable()
 class MediaItem {
-  MediaItem(this.id, this.description, this.productUrl, this.baseUrl);
+  MediaItem(
+      this.id, this.description, this.productUrl, this.baseUrl, this.mimeType);
 
   factory MediaItem.fromJson(Map<String, dynamic> json) =>
       _$MediaItemFromJson(json);
@@ -15,4 +16,5 @@ class MediaItem {
   String? description;
   String? productUrl;
   String? baseUrl;
+  String? mimeType;
 }

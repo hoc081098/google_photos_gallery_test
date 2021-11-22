@@ -71,6 +71,7 @@ class ImagesListPage extends StatelessWidget {
                   StaggeredTile.count(2, index.isEven ? 2 : 1),
               mainAxisSpacing: 8.0,
               crossAxisSpacing: 8.0,
+              padding: const EdgeInsets.all(8.0),
             ),
           );
         },
@@ -104,67 +105,78 @@ class ImageItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const radius = BorderRadius.all(Radius.circular(4.0));
     final width = ((MediaQuery.of(context).size.width - 8.0) / 2).floor();
     debugPrint('[DEBUG] width=$width');
 
-    return GestureDetector(
-      onTap: () {},
-      child: Stack(
-        children: <Widget>[
-          Hero(
-            child: CachedNetworkImage(
-              imageUrl: '${item.baseUrl}=w$width',
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                constraints: const BoxConstraints.expand(),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned.fill(
-                      child: Image.asset(
-                        'assets/images/picture.png',
-                        fit: BoxFit.cover,
+    return Material(
+      borderRadius: radius,
+      elevation: 4.0,
+      child: InkWell(
+        onTap: () {},
+        child: Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: Hero(
+                child: ClipRRect(
+                  borderRadius: radius,
+                  child: CachedNetworkImage(
+                    imageUrl: '${item.baseUrl}=w$width-h$width',
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      constraints: const BoxConstraints.expand(),
+                      child: Stack(
+                        children: <Widget>[
+                          Positioned.fill(
+                            child: Image.asset(
+                              'assets/images/picture.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const Positioned.fill(
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    const Positioned.fill(
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      ),
-                    )
-                  ],
+                  ),
                 ),
+                tag: item.id,
               ),
             ),
-            tag: item.id,
-          ),
-          Positioned(
-            left: 0.0,
-            right: 0.0,
-            bottom: 0.0,
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: <Color>[Colors.black, Colors.transparent],
-                  begin: AlignmentDirectional.bottomCenter,
-                  end: AlignmentDirectional.topCenter,
+            Positioned(
+              left: 0.0,
+              right: 0.0,
+              bottom: 0.0,
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: <Color>[Colors.black, Colors.transparent],
+                    begin: AlignmentDirectional.bottomCenter,
+                    end: AlignmentDirectional.topCenter,
+                  ),
+                  borderRadius: radius,
+                ),
+                alignment: AlignmentDirectional.center,
+                child: Text(
+                  item.description ?? 'N/A',
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context)
+                      .textTheme
+                      .subtitle1!
+                      .copyWith(fontSize: 14.0),
                 ),
               ),
-              alignment: AlignmentDirectional.center,
-              child: Text(
-                item.description ?? 'N/A',
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context)
-                    .textTheme
-                    .subtitle1!
-                    .copyWith(fontSize: 14.0),
-              ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

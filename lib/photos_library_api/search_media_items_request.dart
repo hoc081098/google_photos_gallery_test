@@ -4,7 +4,8 @@ part 'search_media_items_request.g.dart';
 
 @JsonSerializable()
 class SearchMediaItemsRequest {
-  SearchMediaItemsRequest(this.albumId, this.pageSize, this.pageToken, this.filters);
+  SearchMediaItemsRequest(
+      this.albumId, this.pageSize, this.pageToken, this.filters);
 
   SearchMediaItemsRequest.albumId(this.albumId);
 

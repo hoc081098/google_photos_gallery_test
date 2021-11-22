@@ -58,22 +58,31 @@ class PhotosLibraryManager {
       throw const UnauthenticatedException();
     }
     if (album == null) {
-      throw UnimplementedError();
-    }
-    return client
-        .searchMediaItems(
-          SearchMediaItemsRequest(
-            album.id,
-            100,
-            null,
-            SearchMediaItemsRequestFilters(
-              SearchMediaItemsRequestMediaTypeFilter(
-                [SearchMediaItemsRequestMediaType.PHOTO],
+      return client
+          .searchMediaItems(
+            SearchMediaItemsRequest(
+              null,
+              100,
+              null,
+              SearchMediaItemsRequestFilters(
+                SearchMediaItemsRequestMediaTypeFilter(
+                  [SearchMediaItemsRequestMediaType.PHOTO],
+                ),
               ),
             ),
-          ),
+          )
+          .then((res) => res.mediaItems ?? []);
+    }
+
+    return client
+        .searchMediaItems(
+          SearchMediaItemsRequest(album.id, 100, null, null),
         )
-        .then((res) => res.mediaItems ?? []);
+        .then((res) =>
+            res.mediaItems
+                ?.where((m) => m.mimeType?.startsWith('image/') ?? false)
+                .toList(growable: false) ??
+            []);
   }
 
   Future<void> logout() => _googleSignIn.signOut();
