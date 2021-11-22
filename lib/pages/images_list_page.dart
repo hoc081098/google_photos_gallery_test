@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
 import 'package:gallery_test/photos_library_api/album.dart';
