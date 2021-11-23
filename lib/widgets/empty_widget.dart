@@ -15,7 +15,7 @@ class MyEmptyWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Material(
-            color: Colors.grey[200],
+            color: Colors.grey[900],
             borderRadius: BorderRadius.circular(56),
             child: const SizedBox(
               height: 112,
