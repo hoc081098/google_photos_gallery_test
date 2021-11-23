@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,8 +7,6 @@ import 'package:gallery_test/photos_library_api/media_item.dart';
 import 'package:gallery_test/utils/snackbar.dart';
 import 'package:gallery_test/widgets/loading_widget.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
 class ImageDetailPage extends StatefulWidget {
@@ -92,42 +88,20 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       return context.showSnackBar('Failed to get download url');
     }
 
-    final targetPlatform = Theme.of(context).platform;
     isLoading$.add(true);
 
     try {
-      // get external directory
-      Directory? externalDir;
-      switch (targetPlatform) {
-        case TargetPlatform.android:
-          externalDir = await getExternalStorageDirectory();
-          break;
-        case TargetPlatform.iOS:
-          externalDir = await getApplicationDocumentsDirectory();
-          break;
-        default:
-          return downloadDone('Not support target: $targetPlatform');
-      }
-      debugPrint('[DEBUG] externalDir=$externalDir');
-      if (externalDir == null) {
-        return downloadDone('Failed to get external directory');
-      }
-
-      final file =
-          File(path.join(externalDir.path, 'flutterImages', item.filename));
-      if (file.existsSync()) {
-        await file.delete();
-      }
-      await file.create(recursive: true);
-
       debugPrint('[DEBUG] Start download $downloadUrl...');
-      final cachedImageFile =
+      final imageFile =
           await DefaultCacheManager().getSingleFile(downloadUrl.toString());
-      await cachedImageFile.copy(file.path);
-      await ImageGallerySaver.saveFile(file.path, name: item.filename);
-      debugPrint('[DEBUG] Done download $downloadUrl...');
+      await ImageGallerySaver.saveFile(
+        imageFile.path,
+        name: item.filename,
+      );
+      debugPrint('[DEBUG] Done download $imageFile...');
 
-      downloadDone('Image downloaded successfully');
+      downloadDone(
+          'Downloaded photo successfully. Go to System Gallery to see it.');
     } catch (e, s) {
       debugPrint('[ERROR] $e, $s');
       downloadDone('Failed to download image: $e');
@@ -273,7 +247,9 @@ class _DownloadButton extends StatelessWidget {
               if (isLoading)
                 const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.0,
+                  ),
                 )
               else
                 const SizedBox.shrink(),
