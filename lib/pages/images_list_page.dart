@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
+import 'package:gallery_test/pages/image_detail_page.dart';
 import 'package:gallery_test/photos_library_api/album.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -115,7 +116,13 @@ class ImageItemWidget extends StatelessWidget {
       borderRadius: radius,
       elevation: 4.0,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            ImageDetailPage.routeName,
+            arguments: item,
+          );
+        },
         child: Stack(
           children: <Widget>[
             Positioned.fill(

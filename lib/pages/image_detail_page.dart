@@ -7,13 +7,15 @@ import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gallery_test/photos_library_api/media_item.dart';
 import 'package:gallery_test/utils/snackbar.dart';
+import 'package:gallery_test/widgets/loading_widget.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
 class ImageDetailPage extends StatefulWidget {
+  static const routeName = '/image_detail';
+
   final MediaItem item;
 
   const ImageDetailPage({
@@ -51,6 +53,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     return SafeArea(
       child: Scaffold(
         body: Container(
+          constraints: const BoxConstraints.expand(),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: <Color>[
@@ -93,16 +96,6 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     isLoading$.add(true);
 
     try {
-      if (targetPlatform == TargetPlatform.android) {
-        // request runtime permission
-        if (!(await Permission.storage.isGranted)) {
-          if (!(await Permission.storage.request().isGranted)) {
-            return downloadDone(
-                'Permission denied. Go to setting to granted storage permission!');
-          }
-        }
-      }
-
       // get external directory
       Directory? externalDir;
       switch (targetPlatform) {
@@ -125,17 +118,18 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       if (file.existsSync()) {
         await file.delete();
       }
+      await file.create(recursive: true);
 
-      debugPrint('[DEBUG] Start download...');
+      debugPrint('[DEBUG] Start download $downloadUrl...');
       final cachedImageFile =
-          await DefaultCacheManager().getSingleFile(downloadUrl.path);
+          await DefaultCacheManager().getSingleFile(downloadUrl.toString());
       await cachedImageFile.copy(file.path);
       await ImageGallerySaver.saveFile(file.path, name: item.filename);
-      debugPrint('[DEBUG] Done download...');
+      debugPrint('[DEBUG] Done download $downloadUrl...');
 
       downloadDone('Image downloaded successfully');
     } catch (e, s) {
-      debugPrint('[DEBUG] Failed to download image: $e, $s');
+      debugPrint('[ERROR] $e, $s');
       downloadDone('Failed to download image: $e');
     } finally {
       downloadDone(null);
@@ -162,6 +156,18 @@ class _AppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final closeButton = ClipOval(
+      child: Container(
+        color: Colors.black.withOpacity(0.2),
+        child: IconButton(
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+
     final textName = Expanded(
       child: Text(
         item.filename ?? 'N/A',
@@ -175,7 +181,9 @@ class _AppBar extends StatelessWidget {
       child: Container(
         child: Row(
           children: <Widget>[
-            Expanded(child: textName),
+            closeButton,
+            const SizedBox(width: 8.0),
+            textName,
           ],
         ),
         height: kToolbarHeight,
@@ -211,6 +219,7 @@ class _CenterImage extends StatelessWidget {
         (queryData.size.shortestSide * queryData.devicePixelRatio).toInt();
     final height =
         (queryData.size.longestSide * queryData.devicePixelRatio).toInt();
+    debugPrint('[DEBUG] w=$width-h=$height');
 
     return Center(
       child: Hero(
@@ -229,11 +238,7 @@ class _CenterImage extends StatelessWidget {
                   ),
                 ),
                 const Positioned.fill(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                    ),
-                  ),
+                  child: MyLoadingWidget(),
                 )
               ],
             ),
@@ -257,41 +262,38 @@ class _DownloadButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
+      left: 0.0,
+      right: 0.0,
+      bottom: 0.0,
       child: RxStreamBuilder<bool>(
         stream: isLoading$,
         builder: (context, isLoading) {
-          return Column(
+          return Row(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child:
-                    isLoading ? const CircularProgressIndicator() : Container(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Expanded(
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.all(16.0),
-                        backgroundColor: Colors.black.withOpacity(0.7),
-                      ),
-                      onPressed: isLoading ? null : onDownloadImage,
-                      child: const Text(
-                        'Download',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+              if (isLoading)
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(),
+                )
+              else
+                const SizedBox.shrink(),
+              Expanded(
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(24.0),
+                    backgroundColor: Colors.black.withOpacity(0.7),
                   ),
-                ],
+                  onPressed: isLoading ? null : onDownloadImage,
+                  child: const Text(
+                    'Download',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
             ],
           );
         },
       ),
-      left: 0.0,
-      right: 0.0,
-      bottom: 0.0,
     );
   }
 }

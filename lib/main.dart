@@ -7,8 +7,10 @@ import 'package:flutter_provider/flutter_provider.dart';
 import 'package:gallery_test/pages/albums_list_page.dart';
 import 'package:gallery_test/pages/home_page.dart';
 import 'package:gallery_test/manager/photos_library_manager.dart';
+import 'package:gallery_test/pages/image_detail_page.dart';
 import 'package:gallery_test/pages/images_list_page.dart';
 import 'package:gallery_test/photos_library_api/album.dart';
+import 'package:gallery_test/photos_library_api/media_item.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 void main() async {
@@ -68,6 +70,13 @@ class _MyAppState extends State<MyApp> {
             settings: settings,
             builder: (context) =>
                 ImagesListPage(album: settings.arguments as Album?),
+          );
+        }
+        if (settings.name == ImageDetailPage.routeName) {
+          return MaterialPageRoute<void>(
+            settings: settings,
+            builder: (context) =>
+                ImageDetailPage(item: settings.arguments as MediaItem),
           );
         }
         return null;
