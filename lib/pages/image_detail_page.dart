@@ -65,7 +65,10 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
             children: <Widget>[
               _CenterImage(item: widget.item),
               _AppBar(item: widget.item),
-              _buildButtons(),
+              _DownloadButton(
+                isLoading$: isLoading$,
+                onDownloadImage: _downloadImage,
+              ),
             ],
           ),
         ),
@@ -149,46 +152,6 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     if (!isLoading$.isClosed) {
       isLoading$.add(false);
     }
-  }
-
-  Widget _buildButtons() {
-    return Positioned(
-      child: RxStreamBuilder<bool>(
-        stream: isLoading$,
-        builder: (context, isLoading) {
-          return Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child:
-                    isLoading ? const CircularProgressIndicator() : Container(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Expanded(
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.all(16.0),
-                        backgroundColor: Colors.black.withOpacity(0.7),
-                      ),
-                      onPressed: isLoading ? null : _downloadImage,
-                      child: const Text(
-                        'Download',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
-      ),
-      left: 0.0,
-      right: 0.0,
-      bottom: 0.0,
-    );
   }
 }
 
@@ -277,6 +240,58 @@ class _CenterImage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _DownloadButton extends StatelessWidget {
+  final StateStream<bool> isLoading$;
+  final VoidCallback onDownloadImage;
+
+  const _DownloadButton({
+    Key? key,
+    required this.isLoading$,
+    required this.onDownloadImage,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      child: RxStreamBuilder<bool>(
+        stream: isLoading$,
+        builder: (context, isLoading) {
+          return Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child:
+                    isLoading ? const CircularProgressIndicator() : Container(),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.all(16.0),
+                        backgroundColor: Colors.black.withOpacity(0.7),
+                      ),
+                      onPressed: isLoading ? null : onDownloadImage,
+                      child: const Text(
+                        'Download',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+      left: 0.0,
+      right: 0.0,
+      bottom: 0.0,
     );
   }
 }
