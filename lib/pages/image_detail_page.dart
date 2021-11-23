@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
+import 'package:flutter_provider/flutter_provider.dart';
+import 'package:gallery_test/manager/photos_library_manager.dart';
 import 'package:gallery_test/photos_library_api/media_item.dart';
 import 'package:gallery_test/utils/snackbar.dart';
 import 'package:gallery_test/widgets/loading_widget.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
+import 'package:stream_loader/stream_loader.dart';
 
 class ImageDetailPage extends StatefulWidget {
   static const routeName = '/image_detail';
@@ -23,7 +27,16 @@ class ImageDetailPage extends StatefulWidget {
   _ImageDetailPageState createState() => _ImageDetailPageState();
 }
 
-class _ImageDetailPageState extends State<ImageDetailPage> {
+class _ImageDetailPageState extends State<ImageDetailPage>
+    with DisposeBagMixin {
+  Single<MediaItem> getItem() => Single.fromCallable(
+      () => context.get<PhotosLibraryManager>().getMediaItem(widget.item));
+
+  late final bloc = LoaderBloc<MediaItem>(
+    loaderFunction: getItem,
+    initialContent: widget.item,
+    logger: debugPrint,
+  );
   final isLoading$ = StateSubject(false);
 
   @override
@@ -33,10 +46,14 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom],
     ).ignore();
+
+    isLoading$.disposedBy(bag);
+    bloc.fetch();
   }
 
   @override
   void dispose() {
+    bloc.dispose();
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
@@ -60,23 +77,29 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
               end: AlignmentDirectional.bottomEnd,
             ),
           ),
-          child: Stack(
-            children: <Widget>[
-              _CenterImage(item: widget.item),
-              _AppBar(item: widget.item),
-              _DownloadButton(
-                isLoading$: isLoading$,
-                onDownloadImage: _downloadImage,
-              ),
-            ],
-          ),
+          child: RxStreamBuilder<LoaderState<MediaItem>>(
+              stream: bloc.state$,
+              builder: (context, state) {
+                final item = state.content!;
+
+                return Stack(
+                  children: <Widget>[
+                    _CenterImage(item: item),
+                    _AppBar(item: item),
+                    _DownloadButton(
+                      isLoading$: isLoading$,
+                      onDownloadImage: _downloadImage,
+                    ),
+                  ],
+                );
+              }),
         ),
       ),
     );
   }
 
   Future<void> _downloadImage() async {
-    final item = widget.item;
+    final item = bloc.state$.value.content!;
 
     final queryData = MediaQuery.of(context);
     final width =

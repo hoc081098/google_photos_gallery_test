@@ -11,6 +11,7 @@ import 'package:gallery_test/photos_library_api/join_shared_album_request.dart';
 import 'package:gallery_test/photos_library_api/join_shared_album_response.dart';
 import 'package:gallery_test/photos_library_api/list_albums_response.dart';
 import 'package:gallery_test/photos_library_api/list_shared_albums_response.dart';
+import 'package:gallery_test/photos_library_api/media_item.dart';
 import 'package:gallery_test/photos_library_api/search_media_items_request.dart';
 import 'package:gallery_test/photos_library_api/search_media_items_response.dart';
 import 'package:gallery_test/photos_library_api/share_album_request.dart';
@@ -130,6 +131,17 @@ class PhotosLibraryApiClient {
     return SearchMediaItemsResponse.fromJson(jsonDecode(response.body));
   }
 
+  Future<MediaItem> getMediaItem(String mediaItemId) async {
+    final response = await _client.get(
+        Uri.parse(
+            'https://photoslibrary.googleapis.com/v1/mediaItems/$mediaItemId'),
+        headers: await _authHeaders);
+
+    logError(response);
+
+    return MediaItem.fromJson(jsonDecode(response.body));
+  }
+
   Future<BatchCreateMediaItemsResponse> batchCreateMediaItems(
       BatchCreateMediaItemsRequest request) async {
     debugPrint(request.toJson().toString());
@@ -145,12 +157,12 @@ class PhotosLibraryApiClient {
   }
 
   static void logError(final http.Response response) {
-    debugPrint('>> Url: ${response.request?.url}');
-    debugPrint('>> Body: ${response.body}');
-    debugPrint('>> Status code: ${response.statusCode}');
-    debugPrint('>> Reason phrase: ${response.reasonPhrase}');
+    debugPrint('[HTTP] >>> Url: ${response.request?.url}');
+    debugPrint('[HTTP] >>> Body: ${response.body}');
+    debugPrint('[HTTP] >>> Status code: ${response.statusCode}');
+    debugPrint('[HTTP] >>> Reason phrase: ${response.reasonPhrase}');
 
-    if (response.statusCode != 200) {
+    if (response.statusCode < 200 || response.statusCode >= 300) {
       throw HttpException(
         '${response.body} ${response.statusCode}',
         uri: response.request?.url,

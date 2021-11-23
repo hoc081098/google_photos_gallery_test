@@ -43,21 +43,20 @@ class PhotosLibraryManager {
 
   Future<GoogleSignInAccount?> signIn() => _googleSignIn.signIn();
 
-  PhotosLibraryApiClient get _client {
+  Future<PhotosLibraryApiClient> get _client {
     final client = _client$.value;
-    if (client == null) {
-      throw const UnauthenticatedException();
-    }
-    return client;
+    return client == null
+        ? Future.error(const UnauthenticatedException())
+        : Future.value(client);
   }
 
   /// Load albums into the model by retrieving the list of all albums owned
   /// by the user.
   Future<List<Album>> getAlbums() =>
-      _client.listAlbums().then((res) => res.albums ?? []);
+      _client.then((c) => c.listAlbums().then((res) => res.albums ?? []));
 
   Future<List<MediaItem>> getPhotosByAlbum(Album? album) async {
-    final client = _client;
+    final client = await _client;
     if (album == null) {
       return client
           .searchMediaItems(
@@ -85,6 +84,9 @@ class PhotosLibraryManager {
                 .toList(growable: false) ??
             []);
   }
+
+  Future<MediaItem> getMediaItem(MediaItem item) =>
+      _client.then((c) => c.getMediaItem(item.id));
 
   Future<void> logout() => _googleSignIn.signOut();
 }
