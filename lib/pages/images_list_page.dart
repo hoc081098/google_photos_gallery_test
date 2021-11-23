@@ -106,7 +106,9 @@ class ImageItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const radius = BorderRadius.all(Radius.circular(4.0));
-    final width = ((MediaQuery.of(context).size.width - 8.0) / 2).floor();
+    final mediaData = MediaQuery.of(context);
+    final width =
+        (mediaData.size.width - 8 * 3) * mediaData.devicePixelRatio ~/ 2;
     debugPrint('[DEBUG] width=$width');
 
     return Material(
